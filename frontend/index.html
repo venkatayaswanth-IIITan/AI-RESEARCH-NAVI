@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Research Navigator — Human-Centered Literature Intelligence & 3D Knowledge Universe</title>
+  <meta name="description" content="A citation-grounded RAG research assistant and interactive 3D literature constellation for exploring foundational AI and machine learning papers with verified source attribution.">
+  
+  <!-- Fonts: Warm Intellectual Serifs & Modern Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..500&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Three.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-obsidian">
+
+  <!-- Ambient Study Glow / Vignette Background -->
+  <div class="ambient-backdrop"></div>
+  <div class="scholarly-grid-overlay"></div>
+
+  <!-- Top Navigation Bar -->
+  <header class="studio-header">
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-seal">
+          <div class="seal-ring"></div>
+          <span class="seal-icon">✦</span>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">AI RESEARCH NAVIGATOR</div>
+          <div class="brand-subtitle">Citation-Grounded Literature Intelligence</div>
+        </div>
+      </div>
+
+      <!-- Center Nav Pills -->
+      <nav class="nav-pills" id="main-nav">
+        <button class="nav-pill active" data-view="galaxy-view">
+          <span class="pill-icon">🌌</span>
+          <span>3D Constellation</span>
+        </button>
+        <button class="nav-pill" data-view="studio-view">
+          <span class="pill-icon">🖋️</span>
+          <span>Scholar Studio</span>
+        </button>
+        <button class="nav-pill" data-view="corpus-view">
+          <span class="pill-icon">📚</span>
+          <span>Corpus Archive</span>
+          <span class="badge-count" id="corpus-count-badge">50</span>
+        </button>
+        <button class="nav-pill" data-view="telemetry-view">
+          <span class="pill-icon">⚖️</span>
+          <span>Evidence & Guardrails</span>
+        </button>
+      </nav>
+
+      <!-- Right Controls -->
+      <div class="header-actions">
+        <!-- Audio Chime Toggle -->
+        <button class="btn-icon" id="btn-audio-toggle" title="Toggle Scholarly Soundscapes" aria-label="Toggle Scholarly Audio">
+          <span class="audio-icon">🔔</span>
+        </button>
+        <!-- Saved Reading List Button -->
+        <button class="btn-reading-list" id="btn-open-reading-list">
+          <span class="shelf-icon">🔖</span>
+          <span>Notebook</span>
+          <span class="shelf-counter" id="saved-counter">0</span>
+        </button>
+        <!-- Backend Status Indicator -->
+        <div class="status-indicator-badge" id="system-status-badge" title="RAG Pipeline Active">
+          <span class="status-dot pulse"></span>
+          <span class="status-label">50 Grounded Works</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="app-main-content">
+
+    <!-- ==========================================
+         VIEW 1: 3D RESEARCH CONSTELLATION (GALAXY)
+         ========================================== -->
+    <section class="view-panel active" id="galaxy-view">
+      <div class="galaxy-viewport-wrapper">
+        <!-- WebGL Canvas -->
+        <div id="canvas-container">
+          <canvas id="galaxy-canvas"></canvas>
+        </div>
+
+        <!-- 3D Viewport HUD Overlay Header -->
+        <div class="galaxy-hud-top">
+          <div class="hud-meta-card">
+            <span class="hud-tag">3D SPATIAL REPOSITORY</span>
+            <h1 class="hud-title">The Literature Galaxy</h1>
+            <p class="hud-desc">Explore 50 foundational and frontier research papers mapped in 3D citation space. Rotate, zoom, and select nodes to inspect semantic lineages.</p>
+          </div>
+
+          <!-- Quick Search inside 3D Viewport -->
+          <div class="galaxy-search-box">
+            <span class="search-glyph">🔍</span>
+            <input type="text" id="galaxy-quick-search" placeholder="Locate paper (e.g. Attention, LoRA, DeepSeek, RAG)..." autocomplete="off">
+            <button class="btn-clear-search" id="btn-clear-galaxy-search" style="display:none;">✕</button>
+          </div>
+        </div>
+
+        <!-- 3D Layout & Mode Controls (Floating Bar) -->
+        <div class="galaxy-hud-bottom">
+          <div class="layout-toggle-group">
+            <span class="control-label">3D Geometry:</span>
+            <button class="btn-layout-mode active" data-layout="galaxy">Cluster Galaxy</button>
+            <button class="btn-layout-mode" data-layout="spiral">Chronology Spiral</button>
+            <button class="btn-layout-mode" data-layout="sphere">Semantic Sphere</button>
+          </div>
+
+          <!-- Cluster Filter Pills -->
+          <div class="cluster-filters" id="cluster-filter-pills">
+            <button class="cluster-pill active" data-cluster="all">All Disciplines</button>
+            <button class="cluster-pill" data-cluster="Architecture & Attention" style="--c-accent: #f59e0b;">Architecture</button>
+            <button class="cluster-pill" data-cluster="Retrieval & Grounding" style="--c-accent: #10b981;">RAG & Retrieval</button>
+            <button class="cluster-pill" data-cluster="Language Models & Scaling" style="--c-accent: #8b5cf6;">LLMs & Scaling</button>
+            <button class="cluster-pill" data-cluster="Alignment & Safety" style="--c-accent: #ec4899;">Alignment & RLHF</button>
+            <button class="cluster-pill" data-cluster="Reasoning & Agents" style="--c-accent: #38bdf8;">Agents & Reasoning</button>
+            <button class="cluster-pill" data-cluster="Mixture of Experts & Efficiency" style="--c-accent: #f97316;">MoE & Efficiency</button>
+          </div>
+
+          <!-- 3D Viewport Controls (Camera Reset, Orbit Speed) -->
+          <div class="camera-action-group">
+            <button class="btn-camera-util" id="btn-reset-camera" title="Reset Camera View">⟲ Center</button>
+            <button class="btn-camera-util" id="btn-toggle-orbit" title="Toggle Auto-Orbiting">⏸ Orbit</button>
+            <button class="btn-camera-util" id="btn-focus-query" title="Go to Scholar Studio">🖋️ Query Desk</button>
+          </div>
+        </div>
+
+        <!-- Interactive 3D Paper Node Hover / Selection Card (Dynamic 3D Positioned) -->
+        <div class="node-hover-card" id="node-hover-card" style="display:none;">
+          <div class="node-card-cluster-badge" id="hover-card-cluster">Architecture</div>
+          <div class="node-card-year" id="hover-card-year">2017</div>
+          <h3 class="node-card-title" id="hover-card-title">Attention Is All You Need</h3>
+          <p class="node-card-authors" id="hover-card-authors">Vaswani et al.</p>
+          <div class="node-card-tags" id="hover-card-tags"></div>
+          <div class="node-card-actions">
+            <button class="btn-node-inspect" id="btn-inspect-hover-node">Deep Dive</button>
+            <button class="btn-node-bookmark" id="btn-bookmark-hover-node">Save</button>
+          </div>
+        </div>
+
+        <!-- Helper Instructions Floating Pill -->
+        <div class="galaxy-help-pill">
+          <span>✦ Left Click: Rotate</span>
+          <span>✦ Right Click: Pan</span>
+          <span>✦ Scroll: Zoom</span>
+          <span>✦ Click Node: Inspect Paper</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 2: SCHOLAR STUDIO (HUMAN-BASED UI)
+         ========================================== -->
+    <section class="view-panel" id="studio-view">
+      <div class="studio-container">
+        
+        <!-- Left: Scholar Inquiry Console -->
+        <div class="studio-inquiry-column">
+
+          <!-- Workflow Mode Selector (Matching LangGraph Router) -->
+          <div class="scholar-card workflow-card">
+            <div class="card-header-scholarly">
+              <span class="sub-lead">AGENTIC RESEARCH WORKFLOW</span>
+              <h2>Select Inquiry Mode</h2>
+              <p>The system routes your query through specialized LangGraph reasoning pipelines with citation grounding.</p>
+            </div>
+
+            <div class="workflow-grid" id="workflow-selector">
+              <button class="workflow-btn active" data-mode="concept_explanation">
+                <span class="wf-icon">💡</span>
+                <div class="wf-info">
+                  <div class="wf-name">Concept Synthesis</div>
+                  <div class="wf-desc">Deep theoretical breakdown grounded in seminal literature.</div>
+                </div>
+              </button>
+
+              <button class="workflow-btn" data-mode="paper_deep_dive">
+                <span class="wf-icon">🔬</span>
+                <div class="wf-info">
+                  <div class="wf-name">Paper Deep Dive</div>
+                  <div class="wf-desc">Dissect architectural nuances, equations, and insights.</div>
+                </div>
+              </button>
+
+              <button class="workflow-btn" data-mode="compare_approaches">
+                <span class="wf-icon">⚖️</span>
+                <div class="wf-info">
+                  <div class="wf-name">Methodology Matrix</div>
+                  <div class="wf-desc">Comparative analysis of models, training paradigms, and efficiency.</div>
+                </div>
+              </button>
+
+              <button class="workflow-btn" data-mode="recent_developments">
+                <span class="wf-icon">⏳</span>
+                <div class="wf-info">
+                  <div class="wf-name">Temporal Frontier</div>
+                  <div class="wf-desc">Chronological developments post-cutoff with citation lineages.</div>
+                </div>
+              </button>
+
+              <button class="workflow-btn" data-mode="paper_recommendation">
+                <span class="wf-icon">🧭</span>
+                <div class="wf-info">
+                  <div class="wf-name">Reading Path</div>
+                  <div class="wf-desc">Structured progression from foundational to modern papers.</div>
+                </div>
+              </button>
+
+              <button class="workflow-btn" data-mode="refusal_checker">
+                <span class="wf-icon">🛡️</span>
+                <div class="wf-info">
+                  <div class="wf-name">Guardrail Verification</div>
+                  <div class="wf-desc">Refusal mechanisms preventing hallucinations on out-of-corpus queries.</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Query Input Studio Desk -->
+          <div class="scholar-card query-desk-card">
+            <div class="desk-paper-texture"></div>
+            
+            <div class="query-box-wrapper">
+              <label for="research-query-input" class="query-label">
+                <span>RESEARCH INQUIRY</span>
+                <span class="hybrid-badge">Hybrid Fusion: Dense + BM25</span>
+              </label>
+
+              <textarea 
+                id="research-query-input" 
+                rows="3" 
+                placeholder="Pose a technical research question, e.g., 'How does multi-head attention preserve contextual nuance compared to recurrence?'..."
+              ></textarea>
+
+              <div class="query-desk-footer">
+                <div class="keyboard-hint">Press <kbd>Enter</kbd> to execute • <kbd>Shift + Enter</kbd> for line break</div>
+                <div class="query-btn-actions">
+                  <button class="btn-clear-query" id="btn-clear-query">Clear</button>
+                  <button class="btn-execute-inquiry" id="btn-submit-query">
+                    <span class="btn-text">Execute Inquiry</span>
+                    <span class="btn-arrow">→</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pre-Curated Exemplar Prompts -->
+            <div class="curated-prompts-shelf">
+              <div class="shelf-label">Curated Scholarly Investigations:</div>
+              <div class="prompt-chips-carousel" id="exemplar-chips">
+                <button class="prompt-chip" data-prompt="Explain how the Multi-Head Attention mechanism in 'Attention Is All You Need' eliminates recurrence and enables parallel training.">
+                  <span class="chip-badge">Architecture</span>
+                  <span>Multi-Head Attention vs Recurrence</span>
+                </button>
+                <button class="prompt-chip" data-prompt="Compare LoRA (Low-Rank Adaptation) against Full Model Fine-Tuning in terms of trainable parameters, memory footprint, and performance retention.">
+                  <span class="chip-badge">Efficiency</span>
+                  <span>LoRA vs Full Fine-Tuning</span>
+                </button>
+                <button class="prompt-chip" data-prompt="How does Retrieval-Augmented Generation (RAG) ground responses to mitigate hallucination, and how is it evaluated?">
+                  <span class="chip-badge">RAG</span>
+                  <span>RAG Grounding & Hallucination Mitigation</span>
+                </button>
+                <button class="prompt-chip" data-prompt="What are the recent breakthroughs in Reinforcement Learning from Human Feedback (RLHF) and Direct Preference Optimization (DPO)?">
+                  <span class="chip-badge">Alignment</span>
+                  <span>RLHF & Alignment Evolution</span>
+                </button>
+                <button class="prompt-chip" data-prompt="Can you provide a classic Italian sourdough pizza recipe with fermentation times?">
+                  <span class="chip-badge refusal">Guardrail Test</span>
+                  <span>Out-of-Scope Query (Refusal Demo)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Scholarly Reading & Evidence Studio -->
+        <div class="studio-response-column">
+          
+          <!-- Live Execution Telemetry Bar -->
+          <div class="telemetry-bar-pill" id="execution-telemetry" style="display: none;">
+            <div class="tel-item"><span class="tel-dot active"></span> <span id="tel-workflow">Workflow: Concept Synthesis</span></div>
+            <div class="tel-item">⚡ Latency: <span id="tel-latency">1.54s</span></div>
+            <div class="tel-item">📊 Dense: <span id="tel-dense">0.89</span> • BM25: <span id="tel-bm25">0.76</span></div>
+            <div class="tel-item">🛡️ Grounding: <span id="tel-guard">100% Grounded</span></div>
+          </div>
+
+          <!-- Active Investigation / Response Dossier -->
+          <div class="scholar-card response-dossier-card" id="response-container">
+            <!-- Empty state default -->
+            <div class="empty-dossier" id="empty-dossier-state">
+              <div class="empty-seal">✦</div>
+              <h3>Scholar's Reading Desk</h3>
+              <p>Select an inquiry mode and pose a research question or click any curated prompt to synthesize citation-grounded insights from the 50-paper corpus.</p>
+              <div class="empty-features-list">
+                <div class="feat-bullet">
+                  <span class="f-icon">📜</span>
+                  <span><strong>Zero Hallucinations:</strong> Every statement links to peer-reviewed source excerpts.</span>
+                </div>
+                <div class="feat-bullet">
+                  <span class="f-icon">🔍</span>
+                  <span><strong>Evidence Inspector:</strong> Click any citation to inspect the original passage.</span>
+                </div>
+                <div class="feat-bullet">
+                  <span class="f-icon">🛡️</span>
+                  <span><strong>Strict Refusal Policy:</strong> Honest refusal when evidence is absent in corpus.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Loading Skeleton -->
+            <div class="response-loading" id="response-loading-state" style="display:none;">
+              <div class="scholar-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-core"></div>
+              </div>
+              <h4 id="loading-stage-text">Consulting Dense & Lexical Retrievers...</h4>
+              <p class="loading-subtext">Traversing LangGraph node graph & synthesizing cited claims.</p>
+              <div class="loading-progress-track">
+                <div class="loading-progress-bar" id="loading-progress-bar"></div>
+              </div>
+            </div>
+
+            <!-- Active Grounded Answer Output -->
+            <div class="grounded-answer-body" id="answer-content-area" style="display:none;">
+              <div class="answer-header-meta">
+                <div class="dossier-badge" id="response-badge">Synthesized Research Dossier</div>
+                <div class="dossier-actions">
+                  <button class="btn-dossier-tool" id="btn-save-dossier" title="Save to Reading Notebook">🔖 Save</button>
+                  <button class="btn-dossier-tool" id="btn-export-markdown" title="Export as Markdown">📄 Export MD</button>
+                  <button class="btn-dossier-tool" id="btn-copy-dossier" title="Copy text to clipboard">📋 Copy</button>
+                </div>
+              </div>
+
+              <!-- Question echoed -->
+              <h2 class="dossier-question" id="echoed-question">What are the core mechanisms of Multi-Head Attention?</h2>
+
+              <!-- Synthesized Answer Text with Citation Chips -->
+              <div class="dossier-narrative" id="dossier-text">
+                <!-- Injected via app.js -->
+              </div>
+
+              <!-- Evidence Grounding Confidence Banner -->
+              <div class="grounding-audit-banner" id="grounding-audit-banner">
+                <div class="audit-icon-box">✓</div>
+                <div class="audit-details">
+                  <div class="audit-title">Grounding Integrity Verified</div>
+                  <div class="audit-desc" id="audit-desc">This response is 100% grounded across 4 retrieved literature passages. Zero unsupported claims detected.</div>
+                </div>
+              </div>
+
+              <!-- Attached Evidence Passages Carousel / Cards -->
+              <div class="citations-evidence-section">
+                <div class="citations-header">
+                  <h3>Supporting Citations & Evidence Passages</h3>
+                  <span class="citations-count" id="citations-count-label">4 Sources</span>
+                </div>
+                <div class="evidence-cards-container" id="evidence-cards-container">
+                  <!-- Injected via app.js -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 3: CORPUS ARCHIVE (50 PAPERS CATALOG)
+         ========================================== -->
+    <section class="view-panel" id="corpus-view">
+      <div class="corpus-container">
+        
+        <!-- Corpus Archive Header -->
+        <div class="corpus-header-section">
+          <div class="corpus-title-block">
+            <span class="sub-lead">CURATED RESEARCH COLLECTION</span>
+            <h2>The Foundational AI Corpus</h2>
+            <p>50 peer-reviewed research papers, technical reports, and survey materials parsed, chunked, and indexed for dense & lexical hybrid retrieval.</p>
+          </div>
+
+          <!-- Corpus Search and Filter Row -->
+          <div class="corpus-filter-row">
+            <div class="search-input-field">
+              <span class="search-ico">🔍</span>
+              <input type="text" id="corpus-text-filter" placeholder="Search by paper title, author, or keyword...">
+            </div>
+
+            <!-- Discipline Filter Dropdown -->
+            <select id="corpus-discipline-select" class="scholarly-select">
+              <option value="all">All Disciplines (50)</option>
+              <option value="Architecture & Attention">Architecture & Attention</option>
+              <option value="Retrieval & Grounding">Retrieval & Grounding</option>
+              <option value="Language Models & Scaling">Language Models & Scaling</option>
+              <option value="Alignment & Safety">Alignment & Safety</option>
+              <option value="Reasoning & Agents">Reasoning & Agents</option>
+              <option value="Mixture of Experts & Efficiency">MoE & Efficiency</option>
+            </select>
+
+            <!-- Year Range Filter -->
+            <div class="year-slider-widget">
+              <span class="slider-label">Min Year: <strong id="selected-year-val">2017</strong></span>
+              <input type="range" id="corpus-year-slider" min="2017" max="2025" value="2017" step="1">
+            </div>
+
+            <!-- Foundational Toggle -->
+            <label class="toggle-pill-label">
+              <input type="checkbox" id="corpus-foundational-only">
+              <span>Foundational Only</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Papers Grid (with 3D Card Hover Physics) -->
+        <div class="papers-card-grid" id="papers-grid">
+          <!-- 50 Paper cards injected via app.js -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VIEW 4: EVIDENCE, GUARDRAILS & TELEMETRY
+         ========================================== -->
+    <section class="view-panel" id="telemetry-view">
+      <div class="telemetry-container">
+        
+        <div class="telemetry-header-block">
+          <span class="sub-lead">SYSTEM BENCHMARKS & EVALUATION REPORT</span>
+          <h2>Architecture, Grounding & Refusal Audits</h2>
+          <p>AI Research Navigator is engineered with strict refusal guardrails, hybrid lexical-dense ranking, and sub-second P50 query latency.</p>
+        </div>
+
+        <!-- Benchmark Statistics 4-Card Grid (Actual project evaluation metrics) -->
+        <div class="metrics-grid">
+          <div class="metric-card card-3d">
+            <div class="metric-top">
+              <span class="metric-label">Refusal Accuracy</span>
+              <span class="metric-badge green">100% Guardrail</span>
+            </div>
+            <div class="metric-value">1.00</div>
+            <p class="metric-sub">0% Hallucination on out-of-corpus queries. The system strictly refuses ungrounded requests rather than fabricating citations.</p>
+          </div>
+
+          <div class="metric-card card-3d">
+            <div class="metric-top">
+              <span class="metric-label">Precision @ 5</span>
+              <span class="metric-badge amber">Hybrid Fusion</span>
+            </div>
+            <div class="metric-value">0.413</div>
+            <p class="metric-sub">High precision evidence ranking across dense vector cosine distance and BM25 term frequency.</p>
+          </div>
+
+          <div class="metric-card card-3d">
+            <div class="metric-top">
+              <span class="metric-label">Recall @ 5</span>
+              <span class="metric-badge amber">Comprehensive</span>
+            </div>
+            <div class="metric-value">0.583</div>
+            <p class="metric-sub">Ensures multi-faceted query concepts retrieve corresponding seminal contributions.</p>
+          </div>
+
+          <div class="metric-card card-3d">
+            <div class="metric-top">
+              <span class="metric-label">P50 Latency</span>
+              <span class="metric-badge blue">Real-time</span>
+            </div>
+            <div class="metric-value">1.54<small>s</small></div>
+            <p class="metric-sub">Average query response time with full LangGraph routing, retrieval fusion, and citation grounding.</p>
+          </div>
+        </div>
+
+        <!-- LangGraph Workflow & Architecture Schema -->
+        <div class="architecture-diagram-card">
+          <h3>LangGraph Agentic State Graph Workflow</h3>
+          <div class="diagram-flow">
+            <div class="flow-step">
+              <div class="step-num">01</div>
+              <div class="step-box">
+                <span class="step-role">User Query</span>
+                <h4>Intent & Scope Detection</h4>
+                <p>Categorizes query intent into deep dive, comparison, synthesis, or out-of-domain.</p>
+              </div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="step-num">02</div>
+              <div class="step-box">
+                <span class="step-role">Hybrid Retrieval</span>
+                <h4>Dense + BM25 Fusion</h4>
+                <p>Sentence-Transformers (Semantic) + Rank-BM25 (Exact terms) with Reciprocal Rank Fusion.</p>
+              </div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="step-num">03</div>
+              <div class="step-box">
+                <span class="step-role">Guardrail</span>
+                <h4>Refusal Checker</h4>
+                <p>Validates retrieval confidence thresholds. Triggers honest refusal if confidence is below safety cutoffs.</p>
+              </div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="step-num">04</div>
+              <div class="step-box">
+                <span class="step-role">Attribution</span>
+                <h4>Citation Builder</h4>
+                <p>Constructs verifiable metadata anchors and source references.</p>
+              </div>
+            </div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">
+              <div class="step-num">05</div>
+              <div class="step-box">
+                <span class="step-role">Synthesis</span>
+                <h4>Grounded Answer</h4>
+                <p>Produces evidence-backed synthesis with clickable citation links.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       SIDEBAR DRAWER 1: EVIDENCE INSPECTOR DRAWER
+       ========================================== -->
+  <aside class="side-drawer" id="evidence-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <span class="drawer-icon">🔍</span>
+        <h3>Evidence Passage Inspector</h3>
+      </div>
+      <button class="btn-close-drawer" id="btn-close-evidence-drawer">✕</button>
+    </div>
+    <div class="drawer-content" id="evidence-drawer-body">
+      <!-- Injected when clicking a citation chip -->
+    </div>
+  </aside>
+
+  <!-- ==========================================
+       SIDEBAR DRAWER 2: RESEARCH NOTEBOOK / READING LIST
+       ========================================== -->
+  <aside class="side-drawer" id="reading-list-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-group">
+        <span class="drawer-icon">🔖</span>
+        <h3>Scholar's Research Notebook</h3>
+      </div>
+      <button class="btn-close-drawer" id="btn-close-reading-drawer">✕</button>
+    </div>
+    <div class="drawer-content">
+      <div class="notebook-actions-bar">
+        <button class="btn-notebook-action" id="btn-export-bibtex">Export BibTeX</button>
+        <button class="btn-notebook-action" id="btn-export-reading-md">Export Markdown</button>
+        <button class="btn-notebook-action danger" id="btn-clear-reading-list">Clear Shelf</button>
+      </div>
+      <div class="reading-items-list" id="reading-items-list">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+  </aside>
+
+  <!-- Backdrop overlay when drawer is open -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+  <!-- Scripts -->
+  <script src="papers_data.js"></script>
+  <script src="galaxy3d.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
